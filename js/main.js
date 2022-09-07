@@ -42,6 +42,15 @@ Promise.all([fetchJSON("fullplayers"), fetchJSON("solution")]).then(
     ).src = `https://playfootball.games/media/players/${
       game.solution.id % 32
     }/${game.solution.id}.png`;
-  
+
+
+      // YOUR CODE HERE
+    let addRow = setupRows( /* THIS NEEDS A PARAMETER */ );
+    // get myInput object...
+      // when the user types a number an press the Enter key:
+        addRow( /* the ID of the player, where is it? */);
+    //  
+
+
   }
 );
