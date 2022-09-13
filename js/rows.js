@@ -3,6 +3,13 @@
 // .... setupRows .....
 // .... initState ....
 //
+
+// From: https://stackoverflow.com/a/7254108/243532
+function pad(a, b){
+    return(1e15 + a + '').slice(-b);
+}
+
+
 const delay = 350;
 const attribs = ['nationality', 'leagueId', 'teamId', 'position', 'birthdate']
 
@@ -43,6 +50,25 @@ let setupRows = function (game) {
                 resolve();
             }, "2000")
         })
+    }
+
+
+    function showStats(timeout) {
+        return new Promise( (resolve, reject) =>  {
+            setTimeout(() => {
+                document.body.appendChild(stringToHTML(headless(stats())));
+                document.getElementById("showHide").onclick = toggle;
+                bindClose();
+                resolve();
+            }, timeout)
+        })
+    }
+
+    function bindClose() {
+        document.getElementById("closedialog").onclick = function () {
+            document.body.removeChild(document.body.lastChild)
+            document.getElementById("mistery").classList.remove("hue-rotate-180", "blur")
+        }
     }
 
 
@@ -118,6 +144,11 @@ let setupRows = function (game) {
             if (game.guesses.length == 8) {
                 gameOver();
             }
+
+
+                  let interval = /* YOUR CODE HERE */ ;
+
+
          }
 
 
