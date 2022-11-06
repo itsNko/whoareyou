@@ -25,10 +25,7 @@ let game = {
 
 function getSolution(players, solutionArray, difference_In_Days) {
     let solutionArraySize = Object.keys(solutionArray).length
-    console.log(solutionArraySize)
     let index = (difference_In_Days == 0)? 0 : ((difference_In_Days - 1) % solutionArraySize)
-    console.log(index)
-    console.log(solutionArray[index])
     let key = solutionArray[index].id
     let result = players.filter(player => player.id == key)[0]
     console.log(result)
