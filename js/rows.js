@@ -1,76 +1,71 @@
 // YOUR CODE HERE :  
 // .... stringToHTML ....
 // .... setupRows .....
-// .... initState ....
-//
-
-// From: https://stackoverflow.com/a/7254108/243532
-function pad(a, b){
-    return(1e15 + a + '').slice(-b);
-}
-
+import {stringToHTML} from './fragments.js'
+import {fetchJSON} from './loaders.js'
+import {getSolution, differenceInDays} from './main.js'
+export {setupRows}
 
 const delay = 350;
 const attribs = ['nationality', 'leagueId', 'teamId', 'position', 'birthdate']
-
+let players = await fetch('../json/fullplayers.json').then(res => res.json())
+let solutionArray = await fetch('../json/solution.json').then(res => res.json())
 
 let setupRows = function (game) {
 
+    let leagueToFlagJSON = [
+        {
+            "league" : "564",
+            "flag" : "es1"
+        },
+        {
+            "league" : "8",
+            "flag" : "en1"
+        },
+        {
+            "league" : "82",
+            "flag" : "de1"
+        },
+        {
+            "league" : "384",
+            "flag" : "it1"
+        },
+        {
+            "league" : "301",
+            "flag" : "fr1"
+        }
+    ]
 
-    let [state, updateState] = initState('WAYgameState', game.solution.id)
-
-
-    function leagueToFlag(leagueId) {
-        // YOUR CODE HERE
+    function leagueToFlag(leagueId){
+        return leagueToFlagJSON.filter(league => league.league == leagueId)[0].flag
     }
-
 
     function getAge(dateString) {
-        // YOUR CODE HERE
-    }
-    
-    let check = function (theKey, theValue) {
-            // YOUR CODE HERE
-    }
-
-        function unblur(outcome) {
-        return new Promise( (resolve, reject) =>  {
-            setTimeout(() => {
-                document.getElementById("mistery").classList.remove("hue-rotate-180", "blur")
-                document.getElementById("combobox").remove()
-                let color, text
-                if (outcome=='success'){
-                    color =  "bg-blue-500"
-                    text = "Awesome"
-                } else {
-                    color =  "bg-rose-500"
-                    text = "The player was " + game.solution.name
-                }
-                document.getElementById("picbox").innerHTML += `<div class="animate-pulse fixed z-20 top-14 left-1/2 transform -translate-x-1/2 max-w-sm shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden ${color} text-white"><div class="p-4"><p class="text-sm text-center font-medium">${text}</p></div></div>`
-                resolve();
-            }, "2000")
-        })
-    }
-
-
-    function showStats(timeout) {
-        return new Promise( (resolve, reject) =>  {
-            setTimeout(() => {
-                document.body.appendChild(stringToHTML(headless(stats())));
-                document.getElementById("showHide").onclick = toggle;
-                bindClose();
-                resolve();
-            }, timeout)
-        })
-    }
-
-    function bindClose() {
-        document.getElementById("closedialog").onclick = function () {
-            document.body.removeChild(document.body.lastChild)
-            document.getElementById("mistery").classList.remove("hue-rotate-180", "blur")
+        var birthDate = new Date(dateString);
+        var today = new Date();
+        var age = today.getFullYear() - birthDate.getFullYear();
+        var m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
         }
+        return age;
     }
 
+    let check = function (theKey, theValue) {
+        let result = 'incorrect'
+        let solution = getSolution(players, solutionArray, differenceInDays(new Date('08/18/2022')))
+        if(theKey == 'birthdate')
+            if(getAge(solution.birthdate) > getAge(theValue))
+                result = 'higher'
+            else if(getAge(solution.birthdate) < getAge(theValue))
+                result = 'lower'
+            else
+                result = 'correct'
+        else
+        if(solution[theKey] == theValue)
+            result = 'correct'
+        return result
+    }
 
     function setContent(guess) {
         return [
@@ -78,7 +73,7 @@ let setupRows = function (game) {
             `<img src="https://playfootball.games/media/competitions/${leagueToFlag(guess.leagueId)}.png" alt="" style="width: 60%;">`,
             `<img src="https://cdn.sportmonks.com/images/soccer/teams/${guess.teamId % 32}/${guess.teamId}.png" alt="" style="width: 60%;">`,
             `${guess.position}`,
-            `${getAge(guess.birthdate)}` /* YOUR CODE HERE */
+            `${getAge(guess.birthdate)}`
         ]
     }
 
@@ -105,22 +100,9 @@ let setupRows = function (game) {
         playersNode.prepend(stringToHTML(child))
     }
 
-
-    function resetInput(){
-        // YOUR CODE HERE
+    function getPlayer(playerId){
+        return players.filter(player => player.id == playerId)[0]
     }
-
-    let getPlayer = function (playerId) {
-            // YOUR CODE HERE   
-    }
-
-
-    function gameEnded(lastGuess){
-        // YOUR CODE HERE
-    }
-
-
-    resetInput();
 
     return /* addRow */ function (playerId) {
 
@@ -128,30 +110,6 @@ let setupRows = function (game) {
         console.log(guess)
 
         let content = setContent(guess)
-
-        game.guesses.push(playerId)
-        updateState(playerId)
-
-        resetInput();
-
-         if (gameEnded(playerId)) {
-            // updateStats(game.guesses.length);
-
-            if (playerId == game.solution.id) {
-                success();
-            }
-
-            if (game.guesses.length == 8) {
-                gameOver();
-            }
-
-
-                  let interval = /* YOUR CODE HERE */ ;
-
-
-         }
-
-
         showContent(content, guess)
     }
 }
