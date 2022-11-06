@@ -61,9 +61,5 @@ Promise.all([fetchJSON("fullplayers"), fetchJSON("solution")]).then(
           if(e.keyCode === 13)
               addRow(inputBox.value)
       })
-        //addRow( /* the ID of the player, where is it? */);
-    //  
-
-
   }
 );
