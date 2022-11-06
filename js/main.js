@@ -2,10 +2,12 @@ import { folder, leftArrow } from "./fragments.js";
 import { fetchJSON } from "./loaders.js";
 
 function differenceInDays(date1) {
-    // YOUR CODE HERE
+    let today = new Date()
+    let diffTime = Math.abs(today - date1)
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
 }
 
-let difference_In_Days = differenceInDays(new Date("08-18-2022"));
+let difference_In_Days = differenceInDays(new Date("08/18/2022"))
 
 window.onload = function () {
   document.getElementById(
@@ -22,8 +24,15 @@ let game = {
 };
 
 function getSolution(players, solutionArray, difference_In_Days) {
- 
-    // YOUR CODE HERE 
+    let solutionArraySize = Object.keys(solutionArray).length
+    console.log(solutionArraySize)
+    let index = (difference_In_Days == 0)? 0 : ((difference_In_Days - 1) % solutionArraySize)
+    console.log(index)
+    console.log(solutionArray[index])
+    let key = solutionArray[index].id
+    let result = players.filter(player => player.id == key)[0]
+    console.log(result)
+    return result
 }
 
 Promise.all([fetchJSON("fullplayers"), fetchJSON("solution")]).then(
