@@ -1,25 +1,70 @@
 // YOUR CODE HERE :  
 // .... stringToHTML ....
 // .... setupRows .....
+import {stringToHTML} from './fragments.js'
+import {fetchJSON} from './loaders.js'
+import {getSolution, differenceInDays} from './main.js'
+export {setupRows}
 
 const delay = 350;
 const attribs = ['nationality', 'leagueId', 'teamId', 'position', 'birthdate']
-
+let players = await fetch('../json/fullplayers.json').then(res => res.json())
+let solutionArray = await fetch('../json/solution.json').then(res => res.json())
 
 let setupRows = function (game) {
 
+    let leagueToFlagJSON = [
+        {
+            "league" : "564",
+            "flag" : "es1"
+        },
+        {
+            "league" : "8",
+            "flag" : "en1"
+        },
+        {
+            "league" : "82",
+            "flag" : "de1"
+        },
+        {
+            "league" : "384",
+            "flag" : "it1"
+        },
+        {
+            "league" : "301",
+            "flag" : "fr1"
+        }
+    ]
 
-    function leagueToFlag(leagueId) {
-        // YOUR CODE HERE
+    function leagueToFlag(leagueId){
+        return leagueToFlagJSON.filter(league => league.league == leagueId)[0].flag
     }
-
 
     function getAge(dateString) {
-        // YOUR CODE HERE
+        var birthDate = new Date(dateString);
+        var today = new Date();
+        var age = today.getFullYear() - birthDate.getFullYear();
+        var m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age;
     }
-    
+
     let check = function (theKey, theValue) {
-            // YOUR CODE HERE
+        let result = 'incorrect'
+        let solution = getSolution(players, solutionArray, differenceInDays(new Date('08/18/2022')))
+        if(theKey == 'birthdate')
+            if(getAge(solution.birthdate) > getAge(theValue))
+                result = 'higher'
+            else if(getAge(solution.birthdate) < getAge(theValue))
+                result = 'lower'
+            else
+                result = 'correct'
+        else
+        if(solution[theKey] == theValue)
+            result = 'correct'
+        return result
     }
 
     function setContent(guess) {
@@ -55,8 +100,8 @@ let setupRows = function (game) {
         playersNode.prepend(stringToHTML(child))
     }
 
-    let getPlayer = function (playerId) {
-            // YOUR CODE HERE   
+    function getPlayer(playerId){
+        return players.filter(player => player.id == playerId)[0]
     }
 
     return /* addRow */ function (playerId) {
