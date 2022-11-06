@@ -27,7 +27,7 @@ function getSolution(players, solutionArray, difference_In_Days) {
     let solutionArraySize = Object.keys(solutionArray).length
     let index = (difference_In_Days === 0)? 0 : ((difference_In_Days - 1) % solutionArraySize)
     let key = solutionArray[index].id
-    return players.filter(player => player.id === key)[0]
+    return players.filter(player => player.id == key)[0]
 }
 
 Promise.all([fetchJSON("fullplayers"), fetchJSON("solution")]).then(
