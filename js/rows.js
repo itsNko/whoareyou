@@ -7,6 +7,7 @@
 import {stringToHTML, higher, lower} from './fragments.js'
 import {fetchJSON} from './loaders.js'
 import {getSolution, differenceInDays} from './main.js'
+import {initState} from './stats.js'
 export {setupRows}
 
 const delay = 350;
