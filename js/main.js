@@ -1,11 +1,18 @@
 import { folder, leftArrow } from "./fragments.js";
 import { fetchJSON } from "./loaders.js";
+import {setupRows} from './rows.js'
+export {getSolution, differenceInDays}
+import {autocomplete} from './autocomplete.js'
+
+let solution
 
 function differenceInDays(date1) {
-    // YOUR CODE HERE
+    let today = new Date()
+    let diffTime = Math.abs(today - date1)
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
 }
 
-let difference_In_Days = differenceInDays(new Date("08-18-2022"));
+let difference_In_Days = differenceInDays(new Date("2022-08-18"))
 
 window.onload = function () {
   document.getElementById(
@@ -22,8 +29,10 @@ let game = {
 };
 
 function getSolution(players, solutionArray, difference_In_Days) {
- 
-    // YOUR CODE HERE 
+    let solutionArraySize = Object.keys(solutionArray).length
+    let index = (difference_In_Days === 0)? 0 : ((difference_In_Days - 1) % solutionArraySize)
+    let key = solutionArray[index].id
+    return players.filter(player => player.id == key)[0]
 }
 
 Promise.all([fetchJSON("fullplayers"), fetchJSON("solution")]).then(
@@ -34,7 +43,7 @@ Promise.all([fetchJSON("fullplayers"), fetchJSON("solution")]).then(
     [game.players, solution] = values;
 
     game.solution = getSolution(game.players, solution, difference_In_Days);
-    
+
     console.log(game.solution);
 
     document.getElementById(
@@ -43,14 +52,6 @@ Promise.all([fetchJSON("fullplayers"), fetchJSON("solution")]).then(
       game.solution.id % 32
     }/${game.solution.id}.png`;
 
-
-      // YOUR CODE HERE
-    let addRow = setupRows( /* THIS NEEDS A PARAMETER */ );
-    // get myInput object...
-      // when the user types a number an press the Enter key:
-        addRow( /* the ID of the player, where is it? */);
-    //  
-
-
+    autocomplete(document.getElementById('myInput'), game)
   }
 );

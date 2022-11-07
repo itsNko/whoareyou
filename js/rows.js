@@ -3,27 +3,73 @@
 // .... setupRows .....
 // .... initState ....
 //
+
+import {stringToHTML, higher, lower} from './fragments.js'
+import {fetchJSON} from './loaders.js'
+import {getSolution, differenceInDays} from './main.js'
+export {setupRows}
+
 const delay = 350;
 const attribs = ['nationality', 'leagueId', 'teamId', 'position', 'birthdate']
-
+let players = await fetch('../json/fullplayers.json').then(res => res.json())
+let solutionArray = await fetch('../json/solution.json').then(res => res.json())
 
 let setupRows = function (game) {
 
-
-    let [state, updateState] = initState('WAYgameState', game.solution.id)
-
+    let leagueToFlagJSON = [
+        {
+            "league" : "564",
+            "flag" : "es1"
+        },
+        {
+            "league" : "8",
+            "flag" : "en1"
+        },
+        {
+            "league" : "82",
+            "flag" : "de1"
+        },
+        {
+            "league" : "384",
+            "flag" : "it1"
+        },
+        {
+            "league" : "301",
+            "flag" : "fr1"
+        }
+    ]
 
     function leagueToFlag(leagueId) {
-        // YOUR CODE HERE
-    }
-
-
-    function getAge(dateString) {
-        // YOUR CODE HERE
+        return leagueToFlagJSON.filter(league => league.league == leagueId)[0].flag
     }
     
+    let [state, updateState] = initState('WAYgameState', game.solution.id)
+
+    function getAge(dateString) {
+        var birthDate = new Date(dateString);
+        var today = new Date();
+        var age = today.getFullYear() - birthDate.getFullYear();
+        var m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age;
+    }
+
     let check = function (theKey, theValue) {
-            // YOUR CODE HERE
+        let result = 'incorrect'
+        let solution = getSolution(players, solutionArray, differenceInDays(new Date('08/18/2022')))
+        if(theKey == 'birthdate')
+            if(getAge(solution.birthdate) > getAge(theValue))
+                result = 'higher'
+            else if(getAge(solution.birthdate) < getAge(theValue))
+                result = 'lower'
+            else
+                result = 'correct'
+        else
+        if(solution[theKey] == theValue)
+            result = 'correct'
+        return result
     }
 
         function unblur(outcome) {
@@ -47,12 +93,18 @@ let setupRows = function (game) {
 
 
     function setContent(guess) {
+        let birthdateSymbol = ''
+        if(check('birthdate', guess.birthdate) == 'lower')
+            birthdateSymbol = lower
+        else if(check('birthdate', guess.birthdate) == 'higher')
+            birthdateSymbol = higher
+
         return [
             `<img src="https://playfootball.games/who-are-ya/media/nations/${guess.nationality.toLowerCase()}.svg" alt="" style="width: 60%;">`,
             `<img src="https://playfootball.games/media/competitions/${leagueToFlag(guess.leagueId)}.png" alt="" style="width: 60%;">`,
             `<img src="https://cdn.sportmonks.com/images/soccer/teams/${guess.teamId % 32}/${guess.teamId}.png" alt="" style="width: 60%;">`,
             `${guess.position}`,
-            `${getAge(guess.birthdate)}` /* YOUR CODE HERE */
+            `${getAge(guess.birthdate)}${birthdateSymbol}`
         ]
     }
 
@@ -79,13 +131,12 @@ let setupRows = function (game) {
         playersNode.prepend(stringToHTML(child))
     }
 
+    function getPlayer(playerId){
+        return players.filter(player => player.id == playerId)[0]
+    }
 
     function resetInput(){
         // YOUR CODE HERE
-    }
-
-    let getPlayer = function (playerId) {
-            // YOUR CODE HERE   
     }
 
 
