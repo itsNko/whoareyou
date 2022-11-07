@@ -16,6 +16,8 @@ let solutionArray = await fetch('../json/solution.json').then(res => res.json())
 
 let setupRows = function (game) {
 
+    let [state, updateState] = initState('WAYgameState', game.solution.id)
+    
     let leagueToFlagJSON = [
         {
             "league" : "564",
@@ -42,8 +44,6 @@ let setupRows = function (game) {
     function leagueToFlag(leagueId) {
         return leagueToFlagJSON.filter(league => league.league == leagueId)[0].flag
     }
-    
-    let [state, updateState] = initState('WAYgameState', game.solution.id)
 
     function getAge(dateString) {
         var birthDate = new Date(dateString);
@@ -143,8 +143,7 @@ let setupRows = function (game) {
     function gameEnded(lastGuess){
         // YOUR CODE HERE
     }
-
-
+    
     resetInput();
 
     return /* addRow */ function (playerId) {
