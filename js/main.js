@@ -2,6 +2,7 @@ import { folder, leftArrow } from "./fragments.js";
 import { fetchJSON } from "./loaders.js";
 import {setupRows} from './rows.js'
 export {getSolution, differenceInDays}
+import {autocomplete} from './autocomplete.js'
 
 let solution
 
@@ -51,15 +52,6 @@ Promise.all([fetchJSON("fullplayers"), fetchJSON("solution")]).then(
       game.solution.id % 32
     }/${game.solution.id}.png`;
 
-
-      // YOUR CODE HERE
-    let addRow = setupRows(game);
-    // get myInput object...
-      // when the user types a number an press the Enter key:
-      let inputBox = document.getElementById('myInput');
-      inputBox.addEventListener('keyup', (e) => {
-          if(e.keyCode === 13)
-              addRow(inputBox.value)
-      })
+    autocomplete(document.getElementById('myInput'), game)
   }
 );
