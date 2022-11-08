@@ -1,9 +1,3 @@
-// YOUR CODE HERE :  
-// .... stringToHTML ....
-// .... setupRows .....
-// .... initState ....
-//
-
 import {stringToHTML, higher, lower} from './fragments.js'
 import {fetchJSON} from './loaders.js'
 import {getSolution, differenceInDays} from './main.js'
@@ -137,12 +131,26 @@ let setupRows = function (game) {
     }
 
     function resetInput(){
-        // YOUR CODE HERE
+        let myInput = document.getElementById('myInput')
+        let guessCount = JSON.parse(localStorage.getItem('WAYgameState')).guesses.length
+        myInput.value = `Guess ${guessCount} of 8`
     }
 
 
     function gameEnded(lastGuess){
-        // YOUR CODE HERE
+        let guessCount = JSON.parse(localStorage.getItem('WAYgameState')).guesses.length
+        let result = false
+        if(lastGuess == game.solution.id || guessCount >= 8)
+            result = true
+        return result
+    }
+
+    function success(){
+        unblur('success')
+    }
+
+    function gameOver(){
+        unblur('gameOver')
     }
     
     resetInput();
