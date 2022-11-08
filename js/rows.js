@@ -1,8 +1,10 @@
 import {stringToHTML, higher, lower} from './fragments.js'
 import {fetchJSON} from './loaders.js'
 import {getSolution, differenceInDays} from './main.js'
-import {initState} from './stats.js'
-export {setupRows}
+import {initState, getStats} from './stats.js'
+export {setupRows, won}
+
+let won = false
 
 // From: https://stackoverflow.com/a/7254108/243532
 function pad(a, b){
@@ -194,7 +196,7 @@ let setupRows = function (game) {
         resetInput();
 
          if (gameEnded(playerId)) {
-            // updateStats(game.guesses.length);
+            updateStats(game.guesses.length);
 
             if (playerId == game.solution.id) {
                 success();

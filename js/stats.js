@@ -1,6 +1,6 @@
 import {game} from './main.js'
-export {initState}
-export {updateStats, getStats, initState}
+import {won} from './rows.js'
+export {initState, updateStats, getStats, initState, gamestats}
 
 
 let initState = function(what, solutionId) {
@@ -24,17 +24,45 @@ let initState = function(what, solutionId) {
 }
 
 function successRate (e){
-    // YOUR CODE HERE
+    let stats = JSON.parse(localStorage.getItem(e))
+    return stats.successRate
 }
 
 let getStats = function(what) {
-    // YOUR CODE HERE
-    //
+    let stats = JSON.parse(localStorage.getItem(what))
+    if(stats == null)
+        stats = {   "winDistribution": [],
+                    "gamesFailed": 0,
+                    "currentStreak": 0,
+                    "bestStreak": 0,
+                    "totalGames": 0,
+                    "successRate": 0
+                }
+    return stats
 };
 
 
 function updateStats(t){
- // YOUR CODE HERE
+    let gameStats = getStats("gameStats")
+    if(won){
+        gameStats.winDistribution.push(1)
+        gameStats.currentStreak += 1
+    }
+    else
+    {
+        gameStats.winDistribution.push(0)
+        gameStats.gamesFailed += 1
+        gameStats.currentStreak = 0
+    }
+
+    if(gameStats.currentStreak > gameStats.bestStreak)
+        gameStats.bestStreak = currentStreak
+
+    gameStats.totalGames += 1
+    successRate = (gameStats.totalGames - gameStats.gamesFailed) / gameStats.totalGames
+
+    //Save to localStorage:
+    localStorage.setItem('gameStats', JSON.stringify(gameStats))
 };
 
 
