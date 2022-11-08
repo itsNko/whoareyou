@@ -1,7 +1,7 @@
 import { folder, leftArrow } from "./fragments.js";
 import { fetchJSON } from "./loaders.js";
 import {setupRows} from './rows.js'
-export {getSolution, differenceInDays}
+export {getSolution, differenceInDays, game}
 import {autocomplete} from './autocomplete.js'
 
 let solution
@@ -55,3 +55,10 @@ Promise.all([fetchJSON("fullplayers"), fetchJSON("solution")]).then(
     autocomplete(document.getElementById('myInput'), game)
   }
 );
+
+//Reset combo-box if GUESS x OF 8 text appears:
+let myInput = document.getElementById('myInput')
+myInput.addEventListener('focus', e => {
+    if(myInput.value.toUpperCase().startsWith('GUESS'))
+        myInput.value = ''
+})

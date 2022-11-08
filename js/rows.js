@@ -1,9 +1,7 @@
-// YOUR CODE HERE :  
-// .... stringToHTML ....
-// .... setupRows .....
 import {stringToHTML, higher, lower} from './fragments.js'
 import {fetchJSON} from './loaders.js'
 import {getSolution, differenceInDays} from './main.js'
+import {initState} from './stats.js'
 export {setupRows}
 
 const delay = 350;
@@ -13,6 +11,8 @@ let solutionArray = await fetch('../json/solution.json').then(res => res.json())
 
 let setupRows = function (game) {
 
+    let [state, updateState] = initState('WAYgameState', game.solution.id)
+    
     let leagueToFlagJSON = [
         {
             "league" : "564",
@@ -36,7 +36,7 @@ let setupRows = function (game) {
         }
     ]
 
-    function leagueToFlag(leagueId){
+    function leagueToFlag(leagueId) {
         return leagueToFlagJSON.filter(league => league.league == leagueId)[0].flag
     }
 
@@ -66,6 +66,26 @@ let setupRows = function (game) {
             result = 'correct'
         return result
     }
+
+        function unblur(outcome) {
+        return new Promise( (resolve, reject) =>  {
+            setTimeout(() => {
+                document.getElementById("mistery").classList.remove("hue-rotate-180", "blur")
+                document.getElementById("combobox").remove()
+                let color, text
+                if (outcome=='success'){
+                    color =  "bg-blue-500"
+                    text = "Awesome"
+                } else {
+                    color =  "bg-rose-500"
+                    text = "The player was " + game.solution.name
+                }
+                document.getElementById("picbox").innerHTML += `<div class="animate-pulse fixed z-20 top-14 left-1/2 transform -translate-x-1/2 max-w-sm shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden ${color} text-white"><div class="p-4"><p class="text-sm text-center font-medium">${text}</p></div></div>`
+                resolve();
+            }, "2000")
+        })
+    }
+
 
     function setContent(guess) {
         let birthdateSymbol = ''
@@ -110,12 +130,56 @@ let setupRows = function (game) {
         return players.filter(player => player.id == playerId)[0]
     }
 
+    function resetInput(){
+        let myInput = document.getElementById('myInput')
+        let guessCount = JSON.parse(localStorage.getItem('WAYgameState')).guesses.length
+        myInput.value = `Guess ${guessCount} of 8`
+    }
+
+
+    function gameEnded(lastGuess){
+        let guessCount = JSON.parse(localStorage.getItem('WAYgameState')).guesses.length
+        let result = false
+        if(lastGuess == game.solution.id || guessCount >= 8)
+            result = true
+        return result
+    }
+
+    function success(){
+        unblur('success')
+    }
+
+    function gameOver(){
+        unblur('gameOver')
+    }
+    
+    resetInput();
+
     return /* addRow */ function (playerId) {
 
         let guess = getPlayer(playerId)
         console.log(guess)
 
         let content = setContent(guess)
+
+        game.guesses.push(playerId)
+        updateState(playerId)
+
+        resetInput();
+
+         if (gameEnded(playerId)) {
+            // updateStats(game.guesses.length);
+
+            if (playerId == game.solution.id) {
+                success();
+            }
+
+            if (game.guesses.length == 8) {
+                gameOver();
+            }
+         }
+
+
         showContent(content, guess)
     }
 }
