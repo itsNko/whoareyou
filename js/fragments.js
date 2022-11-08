@@ -13,4 +13,28 @@ const stringToHTML = (str) => {
 const lower = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="white" aria-hidden="true" width="25" style="margin-right: -8px; margin-left: -3px;"><path fill-rule="evenodd" d="M14.707 12.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>`;
 const higher = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="white" aria-hidden="true" width="25" style="margin-right: -8px; margin-left: -3px;"><path fill-rule="evenodd" d="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>`;
 
-export{stringToHTML, folder, leftArrow, higher, lower}
+let toggle = function(){
+    if (document.getElementById("showHide").nextSibling.firstChild.style.display == 'none') {
+        document.getElementById("showHide").innerText = "Hide Guess Distribution"
+        document.getElementById("showHide").nextSibling.firstChild.style.display = 'block'
+    }else {
+        document.getElementById("showHide").innerText = "Show Guess Distribution"
+        document.getElementById("showHide").nextSibling.firstChild.style.display = 'none'
+    }
+}
+
+let headless = function (inner) {
+    return `<div id="headlessui-portal-root">
+  <div>
+    <div class="fixed z-10 inset-0 overflow-y-auto" id="headlessui-dialog-1" role="dialog" aria-modal="true" aria-labelledby="headlessui-dialog-title-6">
+      <div class="flex items-center justify-center min-h-screen py-10 px-2 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" id="headlessui-dialog-overlay-5" aria-hidden="true"></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&ZeroWidthSpace;</span>
+        ${inner}
+      </div>
+    </div>
+  </div>
+</div>`
+}
+
+export{stringToHTML, folder, leftArrow, higher, lower, toggle, headless}
