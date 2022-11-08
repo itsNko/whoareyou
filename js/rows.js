@@ -1,36 +1,77 @@
-// YOUR CODE HERE :  
-// .... stringToHTML ....
-// .... setupRows .....
-// .... initState ....
-//
+import {stringToHTML, higher, lower} from './fragments.js'
+import {fetchJSON} from './loaders.js'
+import {getSolution, differenceInDays} from './main.js'
+import {initState} from './stats.js'
+export {setupRows}
 
 // From: https://stackoverflow.com/a/7254108/243532
 function pad(a, b){
     return(1e15 + a + '').slice(-b);
 }
 
-
 const delay = 350;
 const attribs = ['nationality', 'leagueId', 'teamId', 'position', 'birthdate']
-
+let players = await fetch('../json/fullplayers.json').then(res => res.json())
+let solutionArray = await fetch('../json/solution.json').then(res => res.json())
 
 let setupRows = function (game) {
 
 
     let [state, updateState] = initState('WAYgameState', game.solution.id)
-
+    
+    let leagueToFlagJSON = [
+        {
+            "league" : "564",
+            "flag" : "es1"
+        },
+        {
+            "league" : "8",
+            "flag" : "en1"
+        },
+        {
+            "league" : "82",
+            "flag" : "de1"
+        },
+        {
+            "league" : "384",
+            "flag" : "it1"
+        },
+        {
+            "league" : "301",
+            "flag" : "fr1"
+        }
+    ]
 
     function leagueToFlag(leagueId) {
-        // YOUR CODE HERE
+        return leagueToFlagJSON.filter(league => league.league == leagueId)[0].flag
     }
 
 
     function getAge(dateString) {
-        // YOUR CODE HERE
+        var birthDate = new Date(dateString);
+        var today = new Date();
+        var age = today.getFullYear() - birthDate.getFullYear();
+        var m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age;
     }
-    
+
     let check = function (theKey, theValue) {
-            // YOUR CODE HERE
+        let result = 'incorrect'
+        let solution = getSolution(players, solutionArray, differenceInDays(new Date('08/18/2022')))
+        if(theKey == 'birthdate')
+            if(getAge(solution.birthdate) > getAge(theValue))
+                result = 'higher'
+            else if(getAge(solution.birthdate) < getAge(theValue))
+                result = 'lower'
+            else
+                result = 'correct'
+        else
+        if(solution[theKey] == theValue)
+            result = 'correct'
+        return result
     }
 
         function unblur(outcome) {
@@ -73,12 +114,18 @@ let setupRows = function (game) {
 
 
     function setContent(guess) {
+        let birthdateSymbol = ''
+        if(check('birthdate', guess.birthdate) == 'lower')
+            birthdateSymbol = lower
+        else if(check('birthdate', guess.birthdate) == 'higher')
+            birthdateSymbol = higher
+
         return [
             `<img src="https://playfootball.games/who-are-ya/media/nations/${guess.nationality.toLowerCase()}.svg" alt="" style="width: 60%;">`,
             `<img src="https://playfootball.games/media/competitions/${leagueToFlag(guess.leagueId)}.png" alt="" style="width: 60%;">`,
             `<img src="https://cdn.sportmonks.com/images/soccer/teams/${guess.teamId % 32}/${guess.teamId}.png" alt="" style="width: 60%;">`,
             `${guess.position}`,
-            `${getAge(guess.birthdate)}` /* YOUR CODE HERE */
+            `${getAge(guess.birthdate)}${birthdateSymbol}`
         ]
     }
 
@@ -105,21 +152,33 @@ let setupRows = function (game) {
         playersNode.prepend(stringToHTML(child))
     }
 
-
-    function resetInput(){
-        // YOUR CODE HERE
+    function getPlayer(playerId){
+        return players.filter(player => player.id == playerId)[0]
     }
 
-    let getPlayer = function (playerId) {
-            // YOUR CODE HERE   
+    function resetInput(){
+        let myInput = document.getElementById('myInput')
+        let guessCount = JSON.parse(localStorage.getItem('WAYgameState')).guesses.length
+        myInput.value = `Guess ${guessCount} of 8`
     }
 
 
     function gameEnded(lastGuess){
-        // YOUR CODE HERE
+        let guessCount = JSON.parse(localStorage.getItem('WAYgameState')).guesses.length
+        let result = false
+        if(lastGuess == game.solution.id || guessCount >= 8)
+            result = true
+        return result
     }
 
+    function success(){
+        unblur('success')
+    }
 
+    function gameOver(){
+        unblur('gameOver')
+    }
+    
     resetInput();
 
     return /* addRow */ function (playerId) {
