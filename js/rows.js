@@ -1,10 +1,8 @@
-import {stringToHTML, higher, lower} from './fragments.js'
+import {stringToHTML, higher, lower, headless, stats, toggle} from './fragments.js'
 import {fetchJSON} from './loaders.js'
 import {getSolution, differenceInDays} from './main.js'
-import {initState, getStats} from './stats.js'
-export {setupRows, won}
-
-let won = false
+import {initState, getStats, updateStats} from './stats.js'
+export {setupRows}
 
 // From: https://stackoverflow.com/a/7254108/243532
 function pad(a, b){
@@ -175,10 +173,12 @@ let setupRows = function (game) {
 
     function success(){
         unblur('success')
+        showStats(12)
     }
 
     function gameOver(){
         unblur('gameOver')
+        showStats(12)
     }
     
     resetInput();
@@ -196,7 +196,7 @@ let setupRows = function (game) {
         resetInput();
 
          if (gameEnded(playerId)) {
-            updateStats(game.guesses.length);
+            updateStats(game.guesses.length, playerId == game.solution.id);
 
             if (playerId == game.solution.id) {
                 success();
@@ -207,7 +207,12 @@ let setupRows = function (game) {
             }
 
 
-                  let interval = /* YOUR CODE HERE */ ;
+                  let interval = setInterval(() => {
+                      let textField = document.getElementById('newPlayer')
+                      let today = new Date()
+                      textField.innerHTML = `${24 - today.getHours()}:${60 - today.getMinutes()}:${60 - today.getSeconds()}`
+                      console.log(textField.innerHTML)
+                  }, 1000);
 
 
          }

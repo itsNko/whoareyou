@@ -1,5 +1,4 @@
 import {game} from './main.js'
-import {won} from './rows.js'
 export {initState, updateStats, getStats, initState, gamestats}
 
 
@@ -42,7 +41,7 @@ let getStats = function(what) {
 };
 
 
-function updateStats(t){
+function updateStats(t, won){
     let gameStats = getStats("gameStats")
     if(won){
         gameStats.winDistribution.push(1)
@@ -56,10 +55,10 @@ function updateStats(t){
     }
 
     if(gameStats.currentStreak > gameStats.bestStreak)
-        gameStats.bestStreak = currentStreak
+        gameStats.bestStreak = gameStats.currentStreak
 
     gameStats.totalGames += 1
-    successRate = (gameStats.totalGames - gameStats.gamesFailed) / gameStats.totalGames
+    gameStats.successRate = ((gameStats.totalGames - gameStats.gamesFailed) / gameStats.totalGames) * 100
 
     //Save to localStorage:
     localStorage.setItem('gameStats', JSON.stringify(gameStats))
