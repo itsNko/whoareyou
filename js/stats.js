@@ -1,5 +1,6 @@
 import {game} from './main.js'
-export {initState}
+export {initState, updateStats, getStats, initState, gamestats}
+
 
 let initState = function(what, solutionId) {
     let WAYgameState = JSON.parse(localStorage.getItem('WAYgameState'))
@@ -21,5 +22,48 @@ let initState = function(what, solutionId) {
     return [state, anonymousFunction]
 }
 
+function successRate (e){
+    let stats = JSON.parse(localStorage.getItem(e))
+    return stats.successRate
+}
 
+let getStats = function(what) {
+    let stats = JSON.parse(localStorage.getItem(what))
+    if(stats == null)
+        stats = {   "winDistribution": [],
+                    "gamesFailed": 0,
+                    "currentStreak": 0,
+                    "bestStreak": 0,
+                    "totalGames": 0,
+                    "successRate": 0
+                }
+    return stats
+};
+
+
+function updateStats(t, won){
+    let gameStats = getStats("gameStats")
+    if(won){
+        gameStats.winDistribution.push(1)
+        gameStats.currentStreak += 1
+    }
+    else
+    {
+        gameStats.winDistribution.push(0)
+        gameStats.gamesFailed += 1
+        gameStats.currentStreak = 0
+    }
+
+    if(gameStats.currentStreak > gameStats.bestStreak)
+        gameStats.bestStreak = gameStats.currentStreak
+
+    gameStats.totalGames += 1
+    gameStats.successRate = ((gameStats.totalGames - gameStats.gamesFailed) / gameStats.totalGames) * 100
+
+    //Save to localStorage:
+    localStorage.setItem('gameStats', JSON.stringify(gameStats))
+};
+
+
+let gamestats = getStats('gameStats');
 

@@ -1,8 +1,13 @@
-import {stringToHTML, higher, lower} from './fragments.js'
+import {stringToHTML, higher, lower, headless, stats, toggle} from './fragments.js'
 import {fetchJSON} from './loaders.js'
 import {getSolution, differenceInDays} from './main.js'
-import {initState} from './stats.js'
+import {initState, getStats, updateStats} from './stats.js'
 export {setupRows}
+
+// From: https://stackoverflow.com/a/7254108/243532
+function pad(a, b){
+    return(1e15 + a + '').slice(-b);
+}
 
 const delay = 350;
 const attribs = ['nationality', 'leagueId', 'teamId', 'position', 'birthdate']
@@ -10,6 +15,7 @@ let players = await fetch('../json/fullplayers.json').then(res => res.json())
 let solutionArray = await fetch('../json/solution.json').then(res => res.json())
 
 let setupRows = function (game) {
+
 
     let [state, updateState] = initState('WAYgameState', game.solution.id)
     
@@ -39,6 +45,7 @@ let setupRows = function (game) {
     function leagueToFlag(leagueId) {
         return leagueToFlagJSON.filter(league => league.league == leagueId)[0].flag
     }
+
 
     function getAge(dateString) {
         var birthDate = new Date(dateString);
@@ -84,6 +91,25 @@ let setupRows = function (game) {
                 resolve();
             }, "2000")
         })
+    }
+
+
+    function showStats(timeout) {
+        return new Promise( (resolve, reject) =>  {
+            setTimeout(() => {
+                document.body.appendChild(stringToHTML(headless(stats())));
+                document.getElementById("showHide").onclick = toggle;
+                bindClose();
+                resolve();
+            }, timeout)
+        })
+    }
+
+    function bindClose() {
+        document.getElementById("closedialog").onclick = function () {
+            document.body.removeChild(document.body.lastChild)
+            document.getElementById("mistery").classList.remove("hue-rotate-180", "blur")
+        }
     }
 
 
@@ -147,10 +173,12 @@ let setupRows = function (game) {
 
     function success(){
         unblur('success')
+        showStats(12)
     }
 
     function gameOver(){
         unblur('gameOver')
+        showStats(12)
     }
     
     resetInput();
@@ -168,7 +196,7 @@ let setupRows = function (game) {
         resetInput();
 
          if (gameEnded(playerId)) {
-            // updateStats(game.guesses.length);
+            updateStats(game.guesses.length, playerId == game.solution.id);
 
             if (playerId == game.solution.id) {
                 success();
@@ -177,6 +205,16 @@ let setupRows = function (game) {
             if (game.guesses.length == 8) {
                 gameOver();
             }
+
+
+                  let interval = setInterval(() => {
+                      let textField = document.getElementById('newPlayer')
+                      let today = new Date()
+                      textField.innerHTML = `${24 - today.getHours()}:${60 - today.getMinutes()}:${60 - today.getSeconds()}`
+                      console.log(textField.innerHTML)
+                  }, 1000);
+
+
          }
 
 
