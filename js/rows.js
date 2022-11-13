@@ -9,7 +9,7 @@ function pad(a, b){
 }
 
 const delay = 350;
-const attribs = ['nationality', 'leagueId', 'teamId', 'position', 'birthdate']
+const attribs = ['nationality', 'leagueId', 'teamId', 'position', 'birthdate', 'number']
 let players = await fetch('../json/fullplayers.json').then(res => res.json())
 let solutionArray = await fetch('../json/solution.json').then(res => res.json())
 let timeLeftInterval
@@ -119,13 +119,20 @@ let setupRows = function (game) {
             birthdateSymbol = lower
         else if(check('birthdate', guess.birthdate) == 'higher')
             birthdateSymbol = higher
+        
+        let numberSymbol = ''
+        if(guess.number < game.solution.number)
+            numberSymbol = lower
+        else if(guess.number < game.solution.number)
+            numberSymbol = higher
 
         return [
             `<img src="https://playfootball.games/who-are-ya/media/nations/${guess.nationality.toLowerCase()}.svg" alt="" style="width: 60%;">`,
             `<img src="https://playfootball.games/media/competitions/${leagueToFlag(guess.leagueId)}.png" alt="" style="width: 60%;">`,
             `<img src="https://cdn.sportmonks.com/images/soccer/teams/${guess.teamId % 32}/${guess.teamId}.png" alt="" style="width: 60%;">`,
             `${guess.position}`,
-            `${getAge(guess.birthdate)}${birthdateSymbol}`
+            `${getAge(guess.birthdate)}${birthdateSymbol}`,
+            `${guess.number}${numberSymbol}`
         ]
     }
 
