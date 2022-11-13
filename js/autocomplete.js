@@ -8,6 +8,10 @@ function autocomplete(inp, game) {
 
     let players = game.players;
 
+    let WAYgameState = JSON.parse(localStorage.getItem('WAYgameState'))
+    WAYgameState.guesses.map(playerID => addRow(playerID))
+    
+
     /*the autocomplete function takes two arguments,
     the text field element and an array of possible autocompleted values:*/
     let currentFocus;
