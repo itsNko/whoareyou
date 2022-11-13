@@ -1,5 +1,5 @@
 import {game} from './main.js'
-export {initState, updateStats, getStats, initState, gamestats}
+export {initState, updateStats, getStats, gamestats}
 
 
 let initState = function(what, solutionId) {
