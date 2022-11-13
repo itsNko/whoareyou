@@ -1,7 +1,6 @@
 import {stringToHTML, higher, lower, headless, stats, toggle} from './fragments.js'
-import {fetchJSON} from './loaders.js'
 import {getSolution, differenceInDays} from './main.js'
-import {initState, getStats, updateStats} from './stats.js'
+import {initState, updateStats} from './stats.js'
 export {setupRows}
 
 // From: https://stackoverflow.com/a/7254108/243532
@@ -13,6 +12,7 @@ const delay = 350;
 const attribs = ['nationality', 'leagueId', 'teamId', 'position', 'birthdate']
 let players = await fetch('../json/fullplayers.json').then(res => res.json())
 let solutionArray = await fetch('../json/solution.json').then(res => res.json())
+let timeLeftInterval
 
 let setupRows = function (game) {
 
@@ -45,7 +45,6 @@ let setupRows = function (game) {
     function leagueToFlag(leagueId) {
         return leagueToFlagJSON.filter(league => league.league == leagueId)[0].flag
     }
-
 
     function getAge(dateString) {
         var birthDate = new Date(dateString);
@@ -107,6 +106,7 @@ let setupRows = function (game) {
 
     function bindClose() {
         document.getElementById("closedialog").onclick = function () {
+            clearInterval(timeLeftInterval)
             document.body.removeChild(document.body.lastChild)
             document.getElementById("mistery").classList.remove("hue-rotate-180", "blur")
         }
@@ -206,13 +206,13 @@ let setupRows = function (game) {
                 gameOver();
             }
 
+             timeLeftInterval = setInterval(() => {
+                 let textField = document.getElementById('newPlayer')
+                 let today = new Date()
+                 textField.innerHTML = `${('0' + ((24 - today.getHours()) % 24)).slice(-2)}:${('0' + ((60 - today.getMinutes()) % 60)).slice(-2)}:${('0' + ((60 - today.getSeconds()) % 60)).slice(-2)}`
+             }, 1000);
 
-                  let interval = setInterval(() => {
-                      let textField = document.getElementById('newPlayer')
-                      let today = new Date()
-                      textField.innerHTML = `${24 - today.getHours()}:${60 - today.getMinutes()}:${60 - today.getSeconds()}`
-                      console.log(textField.innerHTML)
-                  }, 1000);
+            let interval = timeLeftInterval
 
 
          }
